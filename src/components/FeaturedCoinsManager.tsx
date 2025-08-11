@@ -243,7 +243,6 @@ export const FeaturedCoinsManager: React.FC<FeaturedCoinsManagerProps> = ({
                                   </span>
                                   <span className="flex items-center whitespace-nowrap">
                                     <BarChart2 className="h-3 w-3 mr-1" />
-                                    ${coinMetadata[coin.id].marketCap.toLocaleString()}
                                   </span>
                                 </div>
                               )}
