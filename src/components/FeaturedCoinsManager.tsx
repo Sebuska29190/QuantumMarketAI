@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FeaturedCoin } from '../services/types';
 import { Switch } from './ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Search, GripVertical, Plus, Trash2, TrendingUp, BarChart2, X } from 'lucide-react';
+import { Search, GripVertical, Plus, Trash2, TrendingUp, X } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Input } from './ui/input'
 import { Button } from './ui/button';
