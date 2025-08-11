@@ -12,7 +12,6 @@ import { api } from '../services/api';
 
 interface CoinMetadata {
   price: number;
-  marketCap: number;
 }
 
 interface FeaturedCoinsManagerProps {
@@ -50,7 +49,6 @@ export const FeaturedCoinsManager: React.FC<FeaturedCoinsManagerProps> = ({
         Object.entries(batchData).forEach(([id, data]) => {
           metadata[id] = {
             price: data.price,
-            marketCap: data.marketCap || 0
           };
         });
         
