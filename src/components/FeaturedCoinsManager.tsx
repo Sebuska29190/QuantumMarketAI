@@ -13,6 +13,7 @@ import { api } from '../services/api';
 interface CoinMetadata {
   price: number;
   marketCap: number;
+  change24h: number; // Dodano pole dla procentowej zmiany
 }
 
 interface FeaturedCoinsManagerProps {
@@ -44,13 +45,16 @@ export const FeaturedCoinsManager: React.FC<FeaturedCoinsManagerProps> = ({
     const fetchMetadata = async () => {
       try {
         const coinIds = coins.map(coin => coin.id);
+        if (coinIds.length === 0) return;
+        
         const batchData = await api.getBatchPrices(coinIds);
         
         const metadata: Record<string, CoinMetadata> = {};
-        Object.entries(batchData).forEach(([id, data]) => {
+        Object.entries(batchData).forEach(([id, data]: [string, any]) => {
           metadata[id] = {
             price: data.price,
-            marketCap: data.marketCap || 0
+            marketCap: data.marketCap || 0,
+            change24h: data.change24h || 0,
           };
         });
         
@@ -239,13 +243,19 @@ export const FeaturedCoinsManager: React.FC<FeaturedCoinsManagerProps> = ({
                               </span>
                               {coinMetadata[coin.id] && (
                                 <div className="flex items-center gap-2 text-xs text-slate-400">
-                                  <span className="flex items-center whitespace-nowrap">
+                                  {/* Poniżej znajduje się zmodyfikowany kod */}
+                                  <span className="flex items-center whitespace-nowrap text-white">
                                     <TrendingUp className="h-3 w-3 mr-1" />
-                                    ${coinMetadata[coin.id].price.toLocaleString()}
+                                    ${coinMetadata[coin.id].price.toLocaleString(undefined, {
+                                      minimumFractionDigits: 2,
+                                      maximumFractionDigits: 2
+                                    })}
                                   </span>
-                                  <span className="flex items-center whitespace-nowrap">
-                                    <BarChart2 className="h-3 w-3 mr-1" />
-                                    ${coinMetadata[coin.id].marketCap.toLocaleString()}
+                                  <span className={
+                                    `flex items-center whitespace-nowrap ${coinMetadata[coin.id].change24h > 0 ? 'text-green-500' : 'text-red-500'}`
+                                  }>
+                                    {coinMetadata[coin.id].change24h > 0 ? '+' : ''}
+                                    {coinMetadata[coin.id].change24h.toFixed(2)}%
                                   </span>
                                 </div>
                               )}
@@ -281,4 +291,4 @@ export const FeaturedCoinsManager: React.FC<FeaturedCoinsManagerProps> = ({
       </CardContent>
     </Card>
   );
-}; 
+};
