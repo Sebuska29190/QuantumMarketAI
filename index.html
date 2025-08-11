@@ -14,5 +14,26 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- ---- LICZNIK WYŚWIETLEŃ (CountAPI) ---- -->
+<footer style="text-align:center; margin-top:50px; font-size:18px; color:#555; font-family:sans-serif;">
+  🔥 Liczba odwiedzin: <span id="counter">0</span>
+</footer>
+
+<script>
+  // Zmień poniższy klucz na unikalny dla Twojej strony:
+  const counterKey = 'cryptopulsenow.xyz/viewcount';
+
+  fetch(`https://api.countapi.xyz/hit/${counterKey}`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('counter').textContent = data.value;
+    })
+    .catch(error => {
+      console.error('Błąd licznika:', error);
+      document.getElementById('counter').textContent = '—';
+    });
+</script>
+<!-- ---- KONIEC LICZNIKA ---- -->
+
   </body>
 </html>
