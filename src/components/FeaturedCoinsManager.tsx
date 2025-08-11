@@ -54,7 +54,7 @@ export const FeaturedCoinsManager: React.FC<FeaturedCoinsManagerProps> = ({
           metadata[id] = {
             price: data.price,
             marketCap: data.marketCap || 0,
-            change24h: data.change24h || 0,
+            change24h: data.change24h || ,
           };
         });
         
