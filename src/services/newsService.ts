@@ -8,17 +8,13 @@ export default class NewsService extends BaseService<News[]> {
     protected options: any;
 
     constructor() {
-        super('https://free-news.p.rapidapi.com/v1/search', { q: 'cryptocurrencies', lang: 'en', page: '1', page_size: '24' });
-        this.options = {
-            headers: {
-                'x-rapidapi-host': process.env.REACT_APP_RAPID_API_FREENEWS_HOST,
-                'x-rapidapi-key': process.env.REACT_APP_RAPID_API_FREENEWS_KEY
-            }
-        }
+        super('https://newsdata.io/api/1/news', { q: 'cryptocurrencies', language: 'en', page: '1' });
+        this.options = {}; // Usunięto nagłówki, ponieważ to API ich nie potrzebuje
     }
 
     protected getQueryParams(queryParams: any) {
         queryParams['q'] = queryParams['q'] || this.queryParams['q'];
+        queryParams['apikey'] = process.env.REACT_APP_RAPID_API_FREENEWS_KEY; // Dodano klucz API do parametrów
         return super.getQueryParams(queryParams);
     }
 
@@ -41,8 +37,8 @@ export default class NewsService extends BaseService<News[]> {
                 }
             }),
             mergeMap((res: any) => {
-                this.putInCache(res['articles'], url, 5); // save response in cache for 5min
-                return of(res['articles']);
+                this.putInCache(res['results'], url, 5); // Zmieniono na 'results'
+                return of(res['results']); // Zmieniono na 'results'
             })
         ) as Observable<News[]>
         // return from(this.fetchFakeData(news.articles, 1000));
