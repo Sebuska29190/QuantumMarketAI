@@ -8,22 +8,20 @@ export default class NewsService extends BaseService<News[]> {
     protected options: any;
 
     constructor() {
-        super('https://newsdata.io/api/1/news', { q: 'cryptocurrencies', language: 'en', page: '1' });
-        this.options = {}; // Usunięto nagłówki, ponieważ to API ich nie potrzebuje
+        super('https://newsapi.org/v2/everything', { q: 'cryptocurrency', language: 'en', sortBy: 'publishedAt' });
+        this.options = {};
     }
 
     protected getQueryParams(queryParams: any) {
         queryParams['q'] = queryParams['q'] || this.queryParams['q'];
-        queryParams['apikey'] = process.env.REACT_APP_RAPID_API_FREENEWS_KEY; // Dodano klucz API do parametrów
+        queryParams['apiKey'] = process.env.REACT_APP_RAPID_API_FREENEWS_KEY;
         return super.getQueryParams(queryParams);
     }
 
     public retrieve(queryParams: any = {}): Observable<News[]> {
         const qp = this.getQueryParams(queryParams);
-        if (qp['page'] > 4) return of([]);
         const url = this.getUrl(qp);
 
-        // get response from cache if time passed is less then 5min from the first call
         if (this.isCacheResponseValid(url)) {
             return of(this.getFromCache(url));
         }
@@ -37,8 +35,8 @@ export default class NewsService extends BaseService<News[]> {
                 }
             }),
             mergeMap((res: any) => {
-                this.putInCache(res['results'], url, 5); // Zmieniono 'articles' na 'results'
-                return of(res['results']); // Zmieniono 'articles' na 'results'
+                this.putInCache(res['articles'], url, 5);
+                return of(res['articles']);
             })
         ) as Observable<News[]>
     }
