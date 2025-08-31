@@ -37,10 +37,9 @@ export default class NewsService extends BaseService<News[]> {
                 }
             }),
             mergeMap((res: any) => {
-                this.putInCache(res['results'], url, 5); // Zmieniono na 'results'
-                return of(res['results']); // Zmieniono na 'results'
+                this.putInCache(res['results'], url, 5); // Zmieniono 'articles' na 'results'
+                return of(res['results']); // Zmieniono 'articles' na 'results'
             })
         ) as Observable<News[]>
-        // return from(this.fetchFakeData(news.articles, 1000));
     }
 }
