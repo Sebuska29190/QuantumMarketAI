@@ -8,18 +8,18 @@ export default class NewsService extends BaseService<News[]> {
     protected options: any;
 
     constructor() {
-        super('https://newsapi.org/v2/everything', { q: 'cryptocurrency', language: 'en', sortBy: 'publishedAt' });
+        super('https://financialmodelingprep.com/api/v4/crypto_news', { page: '0' });
         this.options = {};
     }
 
     protected getQueryParams(queryParams: any) {
-        queryParams['q'] = queryParams['q'] || this.queryParams['q'];
-        queryParams['apiKey'] = process.env.REACT_APP_RAPID_API_FREENEWS_KEY;
+        queryParams['apikey'] = process.env.REACT_APP_RAPID_API_FREENEWS_KEY;
         return super.getQueryParams(queryParams);
     }
 
     public retrieve(queryParams: any = {}): Observable<News[]> {
         const qp = this.getQueryParams(queryParams);
+        if (qp['page'] > 4) return of([]);
         const url = this.getUrl(qp);
 
         if (this.isCacheResponseValid(url)) {
@@ -35,8 +35,8 @@ export default class NewsService extends BaseService<News[]> {
                 }
             }),
             mergeMap((res: any) => {
-                this.putInCache(res['articles'], url, 5);
-                return of(res['articles']);
+                this.putInCache(res, url, 5);
+                return of(res);
             })
         ) as Observable<News[]>
     }
