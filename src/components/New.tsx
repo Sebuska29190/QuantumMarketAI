@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, CardMedia, Grid, Typography, CardActionArea } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Typography, CardActionArea } from '@mui/material';
 import React from 'react';
 import NewsModel from '../models/news';
 
