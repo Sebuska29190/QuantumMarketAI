@@ -6,7 +6,7 @@ import NewsList from '../components/NewsList';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { retrieveNewsAction } from '../store/newsSlice';
 import NewsListSkeleton from '../components/NewsListSkeleton';
-import { News as NewsModel } from '../models/news';
+import News from '../models/news'; // Poprawiony import
 
 function News() {
     const [loading, setLoading] = useState(true);
@@ -41,7 +41,6 @@ function News() {
             destroy$.next();
             destroy$.complete();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
