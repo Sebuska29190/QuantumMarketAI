@@ -1,37 +1,56 @@
+import { Box, Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
 import React from 'react';
 import NewsModel from '../models/news';
-import { ButtonBase, Card, CardActions, CardContent, CardMedia, Grid, Typography } from '@mui/material';
-import { formatDistanceToNow } from 'date-fns';
 
 interface Props {
-    newz: NewsModel;
+    newz: NewsModel;
 }
 
 function New({ newz }: Props) {
-    return (
-        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-            <ButtonBase style={{ textAlign: 'left' }} href={newz.link} target={"_blank"}>
-                <Card sx={{ width: 245, height: 245 }}>
-                    <CardMedia
-                        component="img"
-                        height="80"
-                        image={newz.media || ""}
-                        alt=""
-                    />
-                    <CardContent style={{ paddingBottom: 0, paddingTop: "10px", maxHeight: "135px", textOverflow: "ellipsis", overflow: "hidden" }}>
-                        <Typography gutterBottom variant="body2" component="div" dangerouslySetInnerHTML={{ __html: newz.title }}>
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" dangerouslySetInnerHTML={{ __html: newz.summary }}>
-                        </Typography>
-                    </CardContent>
-                    <CardActions>
-                        <Typography noWrap variant='caption' flexGrow={1}>{formatDistanceToNow(new Date(newz.published_date), { addSuffix: true })}</Typography>
-                        {newz.author && <Typography noWrap variant='caption'>@{newz.author}</Typography>}
-                    </CardActions>
-                </Card>
-            </ButtonBase>
-        </Grid>
-    );
+    // ZABEZPIECZONY KOD DO TWORZENIA DATY
+    let publishedDate;
+    if (newz.published_utc) {
+        const date = new Date(newz.published_utc);
+        // Sprawdź, czy data jest prawidłowa
+        if (!isNaN(date.getTime())) {
+            publishedDate = date;
+        }
+    }
+
+    return (
+        <Grid item xs={12} sm={6} md={4}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                {newz.image_url && (
+                    <CardMedia
+                        component="img"
+                        height="140"
+                        image={newz.image_url}
+                        alt={newz.title}
+                    />
+                )}
+                <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography gutterBottom variant="h5" component="div">
+                        <a href={newz.article_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            {newz.title}
+                        </a>
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {newz.description}
+                    </Typography>
+                    <Box sx={{ mt: 2 }}>
+                        <Typography variant="caption" display="block" gutterBottom>
+                            Published by: {newz.publisher.name}
+                        </Typography>
+                        {publishedDate && (
+                            <Typography variant="caption" display="block" gutterBottom>
+                                Published on: {publishedDate.toLocaleDateString()}
+                            </Typography>
+                        )}
+                    </Box>
+                </CardContent>
+            </Card>
+        </Grid>
+    );
 }
 
 export default New;
