@@ -8,18 +8,17 @@ export default class NewsService extends BaseService<News[]> {
     protected options: any;
 
     constructor() {
-        super('https://financialmodelingprep.com/api/v4/crypto_news', { page: '0' });
+        super('https://api.polygon.io/v2/reference/news', { limit: 20 });
         this.options = {};
     }
 
     protected getQueryParams(queryParams: any) {
-        queryParams['apikey'] = process.env.REACT_APP_RAPID_API_FREENEWS_KEY;
+        queryParams['apiKey'] = process.env.REACT_APP_RAPID_API_FREENEWS_KEY;
         return super.getQueryParams(queryParams);
     }
 
     public retrieve(queryParams: any = {}): Observable<News[]> {
         const qp = this.getQueryParams(queryParams);
-        if (qp['page'] > 4) return of([]);
         const url = this.getUrl(qp);
 
         if (this.isCacheResponseValid(url)) {
@@ -35,8 +34,8 @@ export default class NewsService extends BaseService<News[]> {
                 }
             }),
             mergeMap((res: any) => {
-                this.putInCache(res, url, 5);
-                return of(res);
+                this.putInCache(res['results'], url, 5);
+                return of(res['results']);
             })
         ) as Observable<News[]>
     }
