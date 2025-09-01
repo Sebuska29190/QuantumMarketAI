@@ -3,14 +3,14 @@ import NewsModel from '../models/news';
 import New from './New';
 
 interface Props {
-    news: NewsModel[]; // Prawidłowy typ dla tablicy wiadomości
+    news: NewsModel[];
 }
 
 function NewsList({ news }: Props) {
     return (
         <React.Fragment>
             {
-                news.map(newz => <New key={newz._id} newz={newz} />)
+                news.map(newz => <New key={newz.id} newz={newz} />)
             }
         </React.Fragment>
     );
