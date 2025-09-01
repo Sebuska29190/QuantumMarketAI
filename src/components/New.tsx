@@ -9,8 +9,9 @@ interface Props {
 function New({ newz }: Props) {
     // ZABEZPIECZONY KOD DO TWORZENIA DATY
     let publishedDate;
-    if (newz.published_utc) {
-        const date = new Date(newz.published_utc);
+    // Użyj poprawnej nazwy pola: 'published_date'
+    if (newz.published_date) {
+        const date = new Date(newz.published_date);
         // Sprawdź, czy data jest prawidłowa
         if (!isNaN(date.getTime())) {
             publishedDate = date;
