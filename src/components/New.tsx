@@ -1,104 +1,56 @@
-import { ButtonBase, Grid, Skeleton, Stack, TextField } from '@mui/material';
-import { Box } from '@mui/system';
-import React, { ChangeEvent, FormEvent, useEffect, useRef, useState } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import { Subject, takeUntil } from 'rxjs';
-import NewsList from '../components/NewsList';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { retrieveNewsAction } from '../store/newsSlice';
-import SearchIcon from '@mui/icons-material/Search';
-import NewsListSkeleton from '../components/NewsListSkeleton';
+import { Box, Card, CardContent, CardMedia, Grid, Typography } from '@mui/material';
+import React from 'react';
+import NewsModel from '../models/news';
 
-function News() {
-    const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const [destroy$] = useState(new Subject<void>());
-    const [search, setSearch] = useState('');
-    const searchRef = useRef<any>(null);
+// Definiujemy interfejs Props, aby komponent wiedział, jakiego typu danych oczekuje
+interface Props {
+    newz: NewsModel;
+}
 
-    const newsState = useAppSelector(state => state.news);
-    const dispatch = useAppDispatch();
-
-    const retrieveNews = (page: number, search: string) => {
-        retrieveNewsAction(newsState, dispatch, { page, q: search }).pipe(
-            takeUntil(destroy$)
-        ).subscribe(res => {
-            if (page === 1) {
-                setLoading(false);
-            }
-            if (res.length < 24) {
-                setHasMore(false);
-            }
-            if (res.length > 0) {
-                setPage(page + 1);
-            }
-        });
-    }
-
-    const handleSearch = (e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        if (e.target)
-            setSearch(e.target.value)
-    }
-
-    const handleSearchSubmit = (e?: FormEvent<HTMLFormElement>) => {
-        if (!search) return;
-        e?.preventDefault();
-        searchRef.current?.blur();
-        setLoading(true);
-        window.scroll({ top: 0 });
-        retrieveNews(1, search);
-    }
-
-    useEffect(() => {
-        window.scroll({ top: 0 });
-        retrieveNews(page, search);
-
-        return () => {
-            destroy$.next();
-            destroy$.complete();
+function New({ newz }: Props) {
+    // ZABEZPIECZONY KOD DO TWORZENIA DATY
+    let publishedDate;
+    if (newz.published_date) {
+        const date = new Date(newz.published_date);
+        if (!isNaN(date.getTime())) {
+            publishedDate = date;
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }
 
     return (
-        <React.Fragment>
-            <Box sx={{ display: 'flex', alignItems: 'flex-end', mb: 3, position: "sticky", top: 0, paddingTop: "70px", paddingBottom: "10px", zIndex: 10, bgcolor: '#f4f4f4' }}>
-                <Grid container>
-                    <Grid item xs={0} md={3}></Grid>
-                    <Grid item xs={12} md={6} justifyContent={"center"}>
-                        <form onSubmit={handleSearchSubmit}>
-                            <Stack direction={"row"}>
-                                <TextField inputRef={searchRef} value={search} onBlur={() => handleSearchSubmit()} onChange={handleSearch} fullWidth style={{ background: "white" }} id="outlined-basic" label="Search" variant="outlined" size='small' />
-                                <ButtonBase onClick={() => handleSearchSubmit()}>
-                                    <SearchIcon sx={{ color: 'action.active', ml: 1, height: "40px", width: "40px" }} />
-                                </ButtonBase>
-                            </Stack>
-                        </form>
-                    </Grid>
-                    <Grid item xs={0} md={3}></Grid>
-                </Grid>
-            </Box>
-            {
-                loading ? (
-                    <Grid container spacing={2}>
-                        <NewsListSkeleton size={24} />
-                    </Grid>
-                ) : (
-                    <InfiniteScroll style={{ overflow: "inherit" }}
-                        scrollThreshold={"20px"}
-                        next={() => retrieveNews(page, search)}
-                        dataLength={newsState.data?.length}
-                        hasMore={hasMore}
-                        loader={<Skeleton width={"60%"} />}>
-                        <Grid container spacing={2}>
-                            <NewsList news={newsState.data} />
-                        </Grid>
-                    </InfiniteScroll>
-                )
-            }
-        </React.Fragment>
+        <Grid item xs={12} sm={6} md={4}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                {newz.media && (
+                    <CardMedia
+                        component="img"
+                        height="140"
+                        image={newz.media}
+                        alt={newz.title}
+                    />
+                )}
+                <CardContent sx={{ flexGrow: 1 }}>
+                    <Typography gutterBottom variant="h5" component="div">
+                        <a href={newz.link} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            {newz.title}
+                        </a>
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {newz.summary}
+                    </Typography>
+                    <Box sx={{ mt: 2 }}>
+                        <Typography variant="caption" display="block" gutterBottom>
+                            Published by: {newz.rights}
+                        </Typography>
+                        {publishedDate && (
+                            <Typography variant="caption" display="block" gutterBottom>
+                                Published on: {publishedDate.toLocaleDateString()}
+                            </Typography>
+                        )}
+                    </Box>
+                </CardContent>
+            </Card>
+        </Grid>
     );
 }
 
-export default News;
+export default New;
